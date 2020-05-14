@@ -1,0 +1,96 @@
+<div *ngIf="games.length">
+  <mat-grid-list cols="3" rowHeight="100">
+    <mat-grid-tile>
+      <mat-form-field>
+        <input
+          matInput
+          type="search"
+          [(ngModel)]="searchText"
+          (keypress)="resetPageIndex()"
+          placeholder="Search by name..."
+        />
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <mat-form-field>
+        <mat-label>Filter by {{selectedPlatform}} platform</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let platform of platforms" (click)="selectPlatform(platform)"
+          >{{platform}}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <mat-form-field>
+        <mat-label>Sort by: {{ sortType | titlecase }} {{ sortOrder | titlecase }}</mat-label>
+        <mat-select>
+          <mat-option (click)="sortByField('title', 'ascending')"
+          >Title Ascending</mat-option
+          >
+          <mat-option (click)="sortByField('title', 'descending')"
+            >Title Descending</mat-option
+          >
+          <mat-option (click)="sortByField('platform', 'ascending')"
+            >Platform Ascending</mat-option
+          >
+          <mat-option (click)="sortByField('platform', 'descending')"
+            >Platform Descending</mat-option
+          >
+          <mat-option (click)="sortByField('score', 'ascending')"
+            >Score Ascending</mat-option
+          >
+          <mat-option (click)="sortByField('score', 'descending')"
+            >Score Descending</mat-option
+          >
+          <mat-option (click)="sortByField('genre', 'ascending')"
+            >Genre Ascending</mat-option
+          >
+          <mat-option (click)="sortByField('genre', 'descending')"
+            >Genre Descending</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <div>
+
+    </div>
+    <div>
+    </div>
+
+  <mat-grid-list cols="1" rowHeight="100" *ngIf="!(games | search : searchText:'title' | search : selectedPlatform:'platform').length">
+      <mat-grid-tile>No Games!!</mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-grid-list cols="2" rowHeight="350" *ngIf="games.length">
+    <mat-grid-tile *ngFor="let game of games | search : searchText:'title' | search : selectedPlatform:'platform' | sort : sortType : sortOrder | slice: (pageIndex * pageSize) : ((pageIndex + 1) * pageSize); let i = index">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            {{ game.title || 'N/A' }}
+          </mat-card-title>
+          <mat-card-subtitle>{{ game.platform }} <i *ngIf="game.editors_choice == 'Y'">(Editors Choice)</i> </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-grid-list cols="3" rowHeight="200">
+            <mat-grid-tile>
+              <img src="{{game.imageUrl}}" />
+            </mat-grid-tile>
+            <mat-grid-tile class="game-detail">
+              <b>Genre:</b>&nbsp; {{ game.genre }}
+            </mat-grid-tile>
+            <mat-grid-tile class="game-detail">
+              <b>Score:</b>&nbsp; {{ game.score }}
+            </mat-grid-tile>
+          </mat-grid-list>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-paginator *ngIf="(games | search : searchText:'title' | search : selectedPlatform:'platform').length" [length]="(games | search : searchText:'title' | search : selectedPlatform:'platform').length"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="pageSizeOptions"
+               (page)="pageEvent = handlePage($event)">
+  </mat-paginator>
+</div>
